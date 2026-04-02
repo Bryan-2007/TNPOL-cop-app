@@ -71,9 +71,12 @@
           <div>
             <div class="status">Status: ${escapeHtml(c.status)}</div>
             <div class="muted">Submitted: ${escapeHtml(formatTime(c.createdAt))}</div>
+            <div style="margin-top:6px;"><b>Crime Type:</b> ${escapeHtml(c.crimeType)}</div>
             <div style="margin-top:6px;"><b>Location:</b> ${escapeHtml(c.locationTag)}</div>
             <div style="margin-top:6px;"><b>Description:</b> ${escapeHtml(c.description)}</div>
             <div style="margin-top:6px;"><b>Reporter:</b> ${escapeHtml(c.reporter.displayName)} (${escapeHtml(c.reporter.email)})</div>
+            ${c.reporterName ? `<div style="margin-top:6px;"><b>Contact Name:</b> ${escapeHtml(c.reporterName)}</div>` : ''}
+            ${c.reporterPhone ? `<div style="margin-top:6px;"><b>Contact Phone:</b> ${escapeHtml(c.reporterPhone)}</div>` : ''}
             ${c.identityText ? `<div style="margin-top:6px;"><b>Identity (optional):</b> ${escapeHtml(c.identityText)}</div>` : ''}
             ${c.policeNotes ? `<div style="margin-top:6px;"><b>Police notes:</b> ${escapeHtml(c.policeNotes)}</div>` : ''}
           </div>

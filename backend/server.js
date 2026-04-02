@@ -61,6 +61,9 @@ function initDb() {
       location_tag TEXT NOT NULL,
       description TEXT NOT NULL,
       identity_text TEXT NULL,
+      crime_type TEXT NULL,
+      reporter_name TEXT NULL,
+      reporter_phone TEXT NULL,
       status TEXT NOT NULL CHECK (status IN ('submitted','verified','rejected')) DEFAULT 'submitted',
       police_notes TEXT NULL,
       verified_at INTEGER NULL,
@@ -354,18 +357,21 @@ app.post('/api/complaints', requireUser, upload.array('evidence', 10), async (re
 
     const locationTag = String(req.body.locationTag || '').trim();
     const description = String(req.body.description || '').trim();
+    const crimeType = String(req.body.crimeType || '').trim();
+    const reporterName = req.body.reporterName ? String(req.body.reporterName).trim() : null;
+    const reporterPhone = req.body.reporterPhone ? String(req.body.reporterPhone).trim() : null;
     const identityTextRaw = req.body.identityText ? String(req.body.identityText).trim() : '';
     const identityText = identityTextRaw ? identityTextRaw : null;
 
-    if (!locationTag || !description) return res.status(400).json({ error: 'locationTag and description required' });
+    if (!locationTag || !description || !crimeType) return res.status(400).json({ error: 'locationTag, description, and crimeType required' });
 
     const id = randomId();
     const created_at = Date.now();
 
     db.prepare(`
-      INSERT INTO complaints (id, user_id, location_tag, description, identity_text, status, police_notes, verified_at, created_at)
-      VALUES (?, ?, ?, ?, ?, 'submitted', NULL, NULL, ?)
-    `).run(id, userId, locationTag, description, identityText, created_at);
+      INSERT INTO complaints (id, user_id, location_tag, description, identity_text, crime_type, reporter_name, reporter_phone, status, police_notes, verified_at, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'submitted', NULL, NULL, ?)
+    `).run(id, userId, locationTag, description, identityText, crimeType, reporterName, reporterPhone, created_at);
 
     const complaintImagesDir = path.join(UPLOADS_DIR, 'complaint-images', id);
     fs.mkdirSync(complaintImagesDir, { recursive: true });
@@ -411,6 +417,9 @@ app.get('/api/complaints/mine', requireUser, (req, res) => {
       locationTag: c.location_tag,
       description: c.description,
       identityText: c.identity_text,
+      crimeType: c.crime_type,
+      reporterName: c.reporter_name,
+      reporterPhone: c.reporter_phone,
       status: c.status,
       policeNotes: c.police_notes,
       verifiedAt: c.verified_at,
@@ -448,6 +457,9 @@ app.get('/api/police/complaints', requirePolice, (req, res) => {
       locationTag: c.location_tag,
       description: c.description,
       identityText: c.identity_text,
+      crimeType: c.crime_type,
+      reporterName: c.reporter_name,
+      reporterPhone: c.reporter_phone,
       reporter: {
         userId: c.user_id,
         displayName: c.display_name,

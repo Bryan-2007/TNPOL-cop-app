@@ -3,66 +3,89 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TNPOL - Complaint</title>
+    <title>TNPOL - Report Incidents</title>
     <style>
-      body { font-family: Arial, Helvetica, sans-serif; margin: 16px; background: #f7f7f8; }
-      .container { max-width: 900px; margin: 0 auto; background: white; padding: 16px; border-radius: 12px; }
-      .row { display: flex; gap: 12px; flex-wrap: wrap; }
-      .col { flex: 1; min-width: 240px; }
-      input, textarea { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #dcdcdc; }
-      textarea { min-height: 110px; resize: vertical; }
-      label { display: block; margin-top: 10px; margin-bottom: 6px; font-weight: 600; }
-      button { padding: 10px 14px; border-radius: 10px; border: 0; cursor: pointer; }
-      .primary { background: #1f6feb; color: white; }
-      .ghost { background: #eaeaea; }
-      .danger { background: #e23b3b; color: white; }
-      .sos { width: 100%; padding: 18px; font-size: 18px; border-radius: 16px; border: 2px solid #b40000; }
-      .muted { color: #666; font-size: 13px; }
-      .error { color: #b40000; margin-top: 10px; font-size: 13px; }
-      .notice { background: #fff7e6; border: 1px solid #ffe2a8; padding: 12px; border-radius: 12px; margin: 10px 0; }
+      * { box-sizing: border-box; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; margin: 0; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh; }
+      .header { background: linear-gradient(135deg, #2c3e50 0%, #1a2332 100%); color: white; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+      .header-content { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 16px; justify-content: space-between; }
+      .logo-section { display: flex; align-items: center; gap: 12px; }
+      .logo-section img { height: 48px; width: auto; border-radius: 8px; }
+      .header-title { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+      .header-subtitle { margin: 4px 0 0 0; font-size: 13px; opacity: 0.85; }
+      .header-nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+      .container { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+      .row { display: flex; gap: 16px; flex-wrap: wrap; }
+      .col { flex: 1; min-width: 280px; }
+      input, textarea { width: 100%; padding: 12px 14px; border-radius: 8px; border: 1px solid #e0e6ed; font-size: 14px; font-family: inherit; transition: all 0.2s; }
+      input:focus, textarea:focus { outline: none; border-color: #2c3e50; box-shadow: 0 0 0 3px rgba(44,62,80,0.1); }
+      textarea { min-height: 130px; resize: vertical; }
+      label { display: block; margin-top: 14px; margin-bottom: 8px; font-weight: 600; color: #2c3e50; font-size: 14px; }
+      button { padding: 12px 18px; border-radius: 8px; border: 0; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s; font-family: inherit; }
+      button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+      button:active { transform: translateY(0); }
+      .primary { background: #3498db; color: white; }
+      .primary:hover { background: #2980b9; }
+      .ghost { background: #ecf0f5; color: #2c3e50; }
+      .ghost:hover { background: #d5dce0; }
+      .danger { background: #e74c3c; color: white; }
+      .danger:hover { background: #c0392b; }
+      .sos { width: 100%; padding: 20px; font-size: 18px; border-radius: 12px; border: 2px solid #e74c3c; background: white; color: #e74c3c; font-weight: 700; }
+      .sos:hover { background: #fef5f5; }
+      .muted { color: #7f8c8d; font-size: 13px; }
+      .error { color: #e74c3c; margin-top: 10px; font-size: 13px; }
+      .notice { background: #e8f4f8; border-left: 4px solid #3498db; padding: 14px 16px; border-radius: 6px; margin: 16px 0; }
       .hidden { display: none !important; }
       .list { margin-top: 12px; }
-      .card { border: 1px solid #e6e6e6; border-radius: 12px; padding: 12px; background: #fcfcfc; margin-top: 10px; }
-      .thumbs img { width: 80px; height: 60px; object-fit: cover; border-radius: 8px; margin-right: 8px; border: 1px solid #eee; }
-      .status { font-weight: 700; }
-      .topRightActions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+      .card { border: 1px solid #e0e6ed; border-radius: 8px; padding: 16px; background: white; margin-top: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: all 0.2s; }
+      .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+      .thumbs img { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; margin-right: 8px; border: 1px solid #e0e6ed; }
+      .status { font-weight: 700; color: #2c3e50; }
+      .topRightActions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
       .profileWrap { position: relative; }
       .profileMenu {
         position: absolute;
         top: calc(100% + 8px);
         right: 0;
-        width: 240px;
+        width: 220px;
         background: white;
-        border: 1px solid #e6e6e6;
-        border-radius: 12px;
-        box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-        padding: 10px;
+        border: 1px solid #e0e6ed;
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        padding: 8px;
+        z-index: 1000;
       }
       .profileMenu button, .profileMenu .menuItem {
         width: 100%;
-        margin-top: 6px;
+        margin-top: 4px;
         text-align: left;
-        background: #f3f3f3;
+        background: #f8f9fa;
+        color: #2c3e50;
       }
-      .profileMenu .menuItem { padding: 10px 12px; border-radius: 10px; cursor: pointer; }
-      .profileMenu .menuItem.danger { background: #ffecec; }
-      .profileMenu .menuHeader { font-weight: 800; padding: 6px 4px 10px; }
+      .profileMenu .menuItem { padding: 10px 14px; border-radius: 6px; cursor: pointer; border: 0; font-size: 14px; }
+      .profileMenu .menuItem:hover { background: #ecf0f5; }
+      .profileMenu .menuItem.danger { background: #fef5f5; }
+      .profileMenu .menuItem.danger:hover { background: #fadbd8; }
+      .profileMenu .menuHeader { font-weight: 700; padding: 8px 12px; color: #2c3e50; font-size: 13px; }
+      .section-title { font-size: 18px; font-weight: 700; color: #2c3e50; margin: 24px 0 16px 0; }
       .modalOverlay {
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,0.35);
+        background: rgba(0,0,0,0.5);
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 2000;
+        padding: 16px;
       }
       .modal {
-        width: min(560px, 92vw);
+        width: min(480px, 100%);
         background: white;
-        border-radius: 16px;
-        padding: 16px;
-        box-shadow: 0 18px 50px rgba(0,0,0,0.28);
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
       }
+      .modal h3 { margin-top: 0; color: #2c3e50; }
       .modal textarea { min-height: 120px; }
       .alarmOverlay {
         position: fixed;
@@ -83,17 +106,26 @@
       @keyframes alarmFlash { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
       @keyframes alarmHover { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
       @keyframes alarmPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+      a { text-decoration: none; color: inherit; }
+      @media (max-width: 768px) {
+        .header-content { flex-direction: column; align-items: flex-start; }
+        .header-nav { width: 100%; justify-content: space-between; }
+        .col { min-width: 100%; }
+      }
     </style>
   </head>
   <body data-page="complaint">
-    <div class="container">
-      <div class="row" style="align-items:center; justify-content:space-between;">
-        <div>
-          <h2 style="margin:0;">TNPOL</h2>
-          <div class="muted">Report incidents and track rewards</div>
+    <div class="header">
+      <div class="header-content">
+        <div class="logo-section">
+          <img src="/uploads/police-logo.jpg" alt="TNPOL Logo" />
+          <div>
+            <h1 class="header-title">TNPOL</h1>
+            <div class="header-subtitle">Report incidents • Track rewards</div>
+          </div>
         </div>
-        <div class="row" style="align-items:center;">
-          <a href="/rewards.html" class="ghost" style="text-decoration:none; color:#111;">Rewards</a>
+        <div class="header-nav">
+          <a id="rewardsLink" href="/rewards.html" class="ghost" style="padding:10px 14px; border-radius:8px;">Rewards</a>
           <div class="topRightActions">
             <button id="viewMyReportsBtn" class="ghost hidden" type="button" style="text-decoration:none; color:#111; padding:10px 14px; border-radius:10px;">View my reports</button>
             <div class="profileWrap hidden" id="profileWrap">
@@ -106,70 +138,96 @@
               </div>
             </div>
           </div>
-          <div id="authArea" class="row" style="align-items:center; gap:10px;">
-            <a id="loginLink" href="/login.html" class="ghost" style="text-decoration:none; color:#111; padding:10px 14px; border-radius:10px;">Login</a>
-            <a id="registerLink" href="/register.html" class="primary" style="text-decoration:none; color:white;">Register</a>
+          <div id="authArea" class="row" style="gap:8px;">
+            <a id="loginLink" href="/login.html" class="ghost" style="padding:10px 14px; border-radius:8px;">Login</a>
+            <a id="registerLink" href="/register.html" class="primary" style="padding:10px 18px; border-radius:8px;">Register</a>
           </div>
         </div>
       </div>
+    </div>
 
+    <div class="container">
       <div class="notice" id="meNotice">
-        You must be logged in to submit a report so police can verify you for rewards.
+        <strong>ℹ️ Login Required</strong><br/>You must be logged in to submit a report so police can verify you for rewards.
       </div>
 
-      <div class="row" style="margin-top: 16px;">
+      <div class="row" style="margin-top: 20px;">
         <div class="col">
-          <button id="sosBtn" class="danger sos" type="button">SOS (Tap 3 times)</button>
-          <div class="muted" style="margin-top:8px;">
-            Triple-tap triggers an emergency call to <b>100</b> and shows an alarm on screen.
+          <button id="sosBtn" class="danger sos" type="button">🚨 SOS (Tap 3 times)</button>
+          <div class="muted" style="margin-top:10px;">
+            Triple-tap triggers an emergency call to <b>100</b> and displays an alarm.
           </div>
         </div>
       </div>
 
-      <hr style="margin: 18px 0;" />
-
-      <h3>Raise a complaint / report</h3>
+      <div class="section-title">Report Incident</div>
       <form id="complaintForm">
         <div class="row">
           <div class="col">
-            <label for="locationTag">Location tag</label>
-            <input id="locationTag" name="locationTag" placeholder="e.g., Near Main Road, Ward 12" required />
-            <button class="ghost" type="button" id="gpsBtn" style="margin-top:10px;">Use my GPS location</button>
-            <div class="muted" style="margin-top:6px;">If GPS is enabled, we’ll store latitude/longitude.</div>
+            <label for="locationTag">Location</label>
+            <input id="locationTag" name="locationTag" placeholder="e.g., Main Road, Near Hospital" required />
+            <button class="ghost" type="button" id="gpsBtn" style="margin-top:10px; width: auto;">📍 Use my GPS</button>
+            <div id="gpsResult" class="muted" style="margin-top:8px; display:none;"></div>
+            <div class="muted" style="margin-top:8px;">GPS will provide precise coordinates.</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="reporterName">Your Name (optional)</label>
+            <input id="reporterName" name="reporterName" placeholder="First and last name" />
+            <div class="muted" style="margin-top:8px;">Help police identify you.</div>
           </div>
           <div class="col">
-            <label for="identityText">Reporter identity (optional)</label>
-            <input id="identityText" name="identityText" placeholder="Name or contact (optional)" />
-            <div class="muted">You’re already logged in, but you can optionally share details for follow-up.</div>
+            <label for="reporterPhone">Phone Number (optional)</label>
+            <input id="reporterPhone" name="reporterPhone" type="tel" placeholder="10-digit mobile number" />
+            <div class="muted" style="margin-top:8px;">For police follow-up contact.</div>
           </div>
         </div>
 
-        <label for="description">Description</label>
-        <textarea id="description" name="description" placeholder="What happened? Include key details..." required></textarea>
+        <label for="crimeType">Crime Type</label>
+        <select id="crimeType" name="crimeType" style="width: 100%; padding: 12px 14px; border-radius: 8px; border: 1px solid #e0e6ed; font-size: 14px; font-family: inherit; transition: all 0.2s;" required>
+          <option value="">Select a crime type...</option>
+          <option value="theft">Theft</option>
+          <option value="road_fight">Road Fight</option>
+          <option value="domestic_violence">Domestic Violence</option>
+          <option value="murder">Murder</option>
+          <option value="chain_snatching">Chain Snatching</option>
+          <option value="breaking_govt_rules">Breaking Govt Rules</option>
+          <option value="accident">Accident</option>
+          <option value="fire">Fire</option>
+          <option value="shootout">Shootout</option>
+        </select>
+        <div class="muted" style="margin-top:8px;">Select the type of crime reported.</div>
 
-        <label for="evidence">Images as evidence (optional)</label>
+        <label for="description">What Happened?</label>
+        <textarea id="description" name="description" placeholder="Describe the incident in detail..." required></textarea>
+
+        <label for="evidence">Evidence Photos (optional)</label>
         <input id="evidence" name="evidence" type="file" accept="image/*" multiple />
-        <div class="muted">Up to 10 images, 5MB each.</div>
+        <div class="muted">Up to 10 photos, 5MB each max.</div>
 
-        <div class="row" style="margin-top: 14px;">
-          <button class="primary" type="submit">Submit report</button>
+        <div class="row" style="margin-top: 20px; gap: 10px;">
+          <button class="primary" type="submit" style="flex: 1;">Submit Report</button>
         </div>
-        <div id="formError" class="muted" style="color:#b40000; margin-top:10px;"></div>
+        <div id="formError" class="error"></div>
       </form>
+
+      <button id="viewMyReportsBtn" class="ghost hidden" type="button" style="width: auto; margin-top: 16px;">📋 View My Reports</button>
 
       <div id="myReports" class="list hidden"></div>
     </div>
 
     <div id="feedbackModal" class="modalOverlay hidden" aria-hidden="true">
       <div class="modal">
-        <h3 style="margin-top:0;">Give feedback</h3>
-        <div class="muted" style="margin-bottom:10px;">Your feedback helps improve TNPOL.</div>
-        <textarea id="feedbackMessage" placeholder="Write your feedback..." style="width:100%;"></textarea>
-        <div class="row" style="margin-top:12px; gap:10px; justify-content:flex-end;">
-          <button class="ghost" id="feedbackCloseBtn" type="button">Close</button>
-          <button class="primary" id="feedbackSubmitBtn" type="button">Submit</button>
+        <h3>Your Feedback</h3>
+        <p class="muted">Help us improve TNPOL's platform.</p>
+        <textarea id="feedbackMessage" placeholder="What can we improve?"></textarea>
+        <div class="row" style="margin-top:16px; gap:10px; justify-content:flex-end;">
+          <button class="ghost" id="feedbackCloseBtn" type="button">Cancel</button>
+          <button class="primary" id="feedbackSubmitBtn" type="button">Send Feedback</button>
         </div>
-        <div id="feedbackError" class="error hidden" style="margin-top:10px;"></div>
+        <div id="feedbackError" class="error hidden"></div>
       </div>
     </div>
 

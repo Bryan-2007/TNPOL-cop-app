@@ -110,8 +110,11 @@
           <div>
             <div class="status">Status: ${escapeHtml(c.status)}</div>
             <div class="muted">Submitted: ${escapeHtml(formatTime(c.createdAt))}</div>
+            ${c.crimeType ? `<div style="margin-top:6px;"><b>Crime Type:</b> ${escapeHtml(c.crimeType)}</div>` : ''}
             <div style="margin-top:6px;"><b>Location:</b> ${escapeHtml(c.locationTag)}</div>
             <div style="margin-top:6px;"><b>Description:</b> ${escapeHtml(c.description)}</div>
+            ${c.reporterName ? `<div style="margin-top:6px;"><b>Contact Name:</b> ${escapeHtml(c.reporterName)}</div>` : ''}
+            ${c.reporterPhone ? `<div style="margin-top:6px;"><b>Contact Phone:</b> ${escapeHtml(c.reporterPhone)}</div>` : ''}
             ${c.identityText ? `<div style="margin-top:6px;"><b>Identity (optional):</b> ${escapeHtml(c.identityText)}</div>` : ''}
             ${c.policeNotes ? `<div style="margin-top:6px;"><b>Police notes:</b> ${escapeHtml(c.policeNotes)}</div>` : ''}
           </div>
@@ -132,7 +135,10 @@
     const formError = document.getElementById('formError');
     const gpsBtn = document.getElementById('gpsBtn');
     const locationTagInput = document.getElementById('locationTag');
-    const identityTextInput = document.getElementById('identityText');
+    const gpsResultEl = document.getElementById('gpsResult');
+    const reporterNameInput = document.getElementById('reporterName');
+    const reporterPhoneInput = document.getElementById('reporterPhone');
+    const crimeTypeSelect = document.getElementById('crimeType');
     const viewMyReportsBtn = document.getElementById('viewMyReportsBtn');
     const myReports = document.getElementById('myReports');
     const profileWrap = document.getElementById('profileWrap');
@@ -148,6 +154,7 @@
     const feedbackCloseBtn = document.getElementById('feedbackCloseBtn');
     const feedbackError = document.getElementById('feedbackError');
     const alarmOverlay = document.getElementById('alarmOverlay');
+    const rewardsLink = document.getElementById('rewardsLink');
 
     function setHidden(el, hidden) {
       if (!el) return;
@@ -312,13 +319,18 @@
         (pos) => {
           const lat = pos.coords.latitude;
           const lng = pos.coords.longitude;
-          locationTagInput.value = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+          const coords = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+          locationTagInput.value = coords;
           gpsBtn.disabled = false;
-          gpsBtn.textContent = 'Use my GPS location';
+          gpsBtn.textContent = '✓ Location Updated';
+          if (gpsResultEl) {
+            gpsResultEl.textContent = `📍 ${coords}`;
+            gpsResultEl.style.display = 'block';
+          }
         },
         (err) => {
           gpsBtn.disabled = false;
-          gpsBtn.textContent = 'Use my GPS location';
+          gpsBtn.textContent = '📍 Use my GPS';
           setError(formError, err && err.message ? err.message : 'Could not get location.');
         },
         { enableHighAccuracy: true, timeout: 8000, maximumAge: 1000 }
@@ -367,6 +379,16 @@
       }
     });
 
+    rewardsLink && rewardsLink.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const user = await loadMe();
+      if (!user) {
+        alert('You must login for viewing rewards');
+        return;
+      }
+      location.href = '/rewards.html';
+    });
+
     form && form.addEventListener('submit', async (e) => {
       e.preventDefault();
       setError(formError, '');
@@ -381,8 +403,12 @@
       const fd = new FormData();
       fd.append('locationTag', locationTagInput.value);
       fd.append('description', document.getElementById('description').value);
-      if (identityTextInput && identityTextInput.value) {
-        fd.append('identityText', identityTextInput.value);
+      fd.append('crimeType', crimeTypeSelect.value);
+      if (reporterNameInput && reporterNameInput.value) {
+        fd.append('reporterName', reporterNameInput.value);
+      }
+      if (reporterPhoneInput && reporterPhoneInput.value) {
+        fd.append('reporterPhone', reporterPhoneInput.value);
       }
       const evidenceInput = document.getElementById('evidence');
       if (evidenceInput && evidenceInput.files && evidenceInput.files.length) {
