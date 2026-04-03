@@ -97,6 +97,33 @@ app.get("/api/db-insert", async (req, res) => {
 });
 
 /* =========================
+   DATABASE UPDATE TEST
+========================= */
+
+app.get("/api/db-update", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("test")
+      .update({ created_at: new Date() })
+      .eq("id", 2)
+      .select();
+
+    if (error) throw error;
+
+    res.json({
+      success: true,
+      message: "Record updated",
+      data,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message,
+    });
+  }
+});
+
+/* =========================
    EXPORT FOR VERCEL
 ========================= */
 
