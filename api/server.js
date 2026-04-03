@@ -149,6 +149,97 @@ app.get("/api/db-delete", async (req, res) => {
 });
 
 /* =========================
+   CONNECTING DATABASE WITH FRONTEND
+========================= */
+
+/* =========================
+   COMPLAINT API ROUTES
+========================= */
+
+app.post("/api/complaints", async (req, res) => {
+  try {
+    const { user_id, station_id, title, description, category, priority } = req.body;
+
+    const { data, error } = await supabase
+      .from("complaints")
+      .insert([{ user_id, station_id, title, description, category, priority }])
+      .select();
+
+    if (error) throw error;
+
+    res.json({ success: true, message: "Complaint created", data });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get("/api/complaints", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("complaints")
+      .select(`*, users(name,email), police_stations(station_name,district)`)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get("/api/complaints/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { data, error } = await supabase
+      .from("complaints")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) throw error;
+
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.patch("/api/complaints/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, priority } = req.body;
+
+    const { data, error } = await supabase
+      .from("complaints")
+      .update({ status, priority, updated_at: new Date() })
+      .eq("id", id)
+      .select();
+
+    if (error) throw error;
+
+    res.json({ success: true, message: "Complaint updated", data });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.delete("/api/complaints/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { error } = await supabase.from("complaints").delete().eq("id", id);
+
+    if (error) throw error;
+
+    res.json({ success: true, message: "Complaint deleted" });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/* =========================
    EXPORT FOR VERCEL
 ========================= */
 
