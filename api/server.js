@@ -2,8 +2,17 @@ import express from "express";
 import { createClient } from "@supabase/supabase-js";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
+
+/* =========================
+   STATIC FILES
+========================= */
+app.use(express.static(join(__dirname, "..", "public")));
+app.use("/uploads", express.static(join(__dirname, "..", "uploads")));
 
 /* =========================
    BODY PARSERS
