@@ -55,7 +55,10 @@ app.get("/api/health", (_, res) => {
    CURRENT USER
 ========================= */
 app.get("/api/me", (req, res) => {
+  const token = req.headers.cookie?.replace("session=", "");
+  console.log('[API/ME] Cookie received:', token ? 'YES' : 'NO');
   const user = getUser(req);
+  console.log('[API/ME] User found:', user ? `${user.email} (role: ${user.role})` : 'NO');
   res.json({ user: user || null });
 });
 
@@ -144,13 +147,15 @@ app.post("/api/auth/login", async (req, res) => {
     user.displayName = user.name;
 
     const token = createSession(user);
-    res.setHeader("Set-Cookie", `session=${token}; Path=/; HttpOnly`);
+    console.log('[LOGIN] Session created for:', email, 'role:', user.role, 'token:', token);
+    res.setHeader("Set-Cookie", `session=${token}; Path=/; HttpOnly; SameSite=Lax`);
 
     res.json({
       ok: true,
       user,
     });
   } catch (err) {
+    console.error('[LOGIN] Error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });

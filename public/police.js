@@ -220,14 +220,19 @@
   // Initialize
   (async () => {
     try {
+      console.log('[POLICE] Dashboard initializing...');
       const user = await loadMe();
+      console.log('[POLICE] loadMe() returned:', user);
+      
       if (!user) {
         // Not logged in
+        console.log('[POLICE] User not logged in, showing login panel');
         if (loginPanel) loginPanel.classList.remove('hidden');
         if (dashboard) dashboard.classList.add('hidden');
         return;
       }
 
+      console.log('[POLICE] User role:', user.role);
       if (user.role !== 'police') {
         alert('Police access required. Redirecting...');
         location.href = '/';
@@ -235,12 +240,13 @@
       }
 
       // Police user logged in
+      console.log('[POLICE] Valid police user, showing dashboard');
       if (loginPanel) loginPanel.classList.add('hidden');
       if (dashboard) dashboard.classList.remove('hidden');
       await loadComplaints();
       await loadRewardsHistory();
     } catch (err) {
-      console.error('Error initializing police dashboard:', err);
+      console.error('[POLICE] Error initializing police dashboard:', err);
     }
   })();
 })();

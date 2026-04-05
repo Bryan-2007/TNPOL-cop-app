@@ -481,14 +481,19 @@
 
       try {
         const data = await apiJson('/api/auth/login', { method: 'POST', body: JSON.stringify(payload) });
+        console.log('[LOGIN] Login response:', data);
+        console.log('[LOGIN] User role:', data?.user?.role);
         if (data?.ok) {
           if (data.user?.role === 'police') {
+            console.log('[LOGIN] Police user detected, redirecting to /police.html');
             location.href = '/police.html';
           } else {
+            console.log('[LOGIN] Citizen user, redirecting to /');
             location.href = '/';
           }
         }
       } catch (err) {
+        console.error('[LOGIN] Login error:', err);
         setError(errorEl, err.message || 'Login failed');
       }
     });
