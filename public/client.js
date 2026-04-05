@@ -122,6 +122,19 @@
   }
 
   async function initComplaintPage() {
+    const user = await loadMe();
+    
+    // Redirect police users to their dashboard
+    if (user && user.role === 'police') {
+      location.href = '/police.html';
+      return;
+    }
+
+    if (!user) {
+      location.href = '/login.html';
+      return;
+    }
+
     const meNotice = document.getElementById('meNotice');
     const loginLink = document.getElementById('loginLink');
     const registerLink = document.getElementById('registerLink');
@@ -465,7 +478,13 @@
 
       try {
         const data = await apiJson('/api/auth/login', { method: 'POST', body: JSON.stringify(payload) });
-        if (data?.ok) location.href = '/';
+        if (data?.ok) {
+          if (data.user?.role === 'police') {
+            location.href = '/police.html';
+          } else {
+            location.href = '/';
+          }
+        }
       } catch (err) {
         setError(errorEl, err.message || 'Login failed');
       }

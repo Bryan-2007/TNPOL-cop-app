@@ -54,33 +54,33 @@
 
     <div class="container">
       <div id="loginPanel" class="card" style="max-width: 480px;">
-        <h3>👮 Officer Sign In</h3>
-        <form id="policeLoginForm">
-          <label for="username">Username</label>
-          <input id="username" name="username" placeholder="admin" required />
-          <label for="password">Password</label>
-          <input id="password" name="password" type="password" placeholder="••••••••" required />
-          <div class="muted" style="margin-top:12px;">Default credentials configured via environment variables.</div>
-          <div id="formError" class="error"></div>
-          <button class="primary" type="submit" style="margin-top:16px; width:100%;">Sign In</button>
-        </form>
+        <h3>👮 Officer Access</h3>
+        <p class="muted">Redirecting to login...</p>
+        <p style="margin-top:12px;"><a href="/login.html" class="primary" style="display:inline-block; padding:10px 14px; border-radius:6px; background:#3498db; color:white; text-decoration:none;">Police Login</a></p>
       </div>
 
       <div id="dashboard" class="hidden">
-        <div class="section-title">📋 Report Verification</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+          <div class="section-title" style="margin:0;">📋 Report Verification Dashboard</div>
+          <button id="logoutBtn" class="ghost" type="button" style="margin:0;">Logout</button>
+        </div>
         <div class="row" style="align-items:flex-end; margin-bottom:16px;">
           <div class="col" style="min-width:260px;">
             <label for="statusSelect">Filter by Status</label>
             <select id="statusSelect">
-              <option value="submitted">Pending (New)</option>
+              <option value="submitted">📥 Pending (New)</option>
               <option value="verified">✓ Verified</option>
               <option value="rejected">✗ Rejected</option>
             </select>
           </div>
-          <button class="ghost" id="refreshBtn" type="button" style="margin-top:0;">Refresh</button>
+          <button class="ghost" id="refreshBtn" type="button" style="margin-top:0;">🔄 Refresh</button>
+          <button class="ghost" id="sortBtn" type="button" style="margin-top:0;">↓ Date (Newest first)</button>
         </div>
 
         <div id="policeComplaints" class="muted">Loading...</div>
+
+        <div class="section-title" style="margin-top:32px;">💰 Rewards History</div>
+        <div id="rewardsHistory" class="muted">Loading...</div>
       </div>
     </div>
 

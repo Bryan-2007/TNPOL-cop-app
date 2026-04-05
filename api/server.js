@@ -241,4 +241,164 @@ app.get("/api/rewards/mine", async (req, res) => {
   }
 });
 
+/* =====================================================
+   POLICE OPERATIONS
+===================================================== */
+
+/* Get all complaints for police verification */
+app.get("/api/police/complaints", async (req, res) => {
+  try {
+    const user = getUser(req);
+    if (!user || user.role !== "police")
+      return res.status(401).json({ error: "Police access required" });
+
+    const status = req.query.status || "submitted";
+
+    const { data, error } = await supabase
+      .from("complaints")
+      .select(`
+        id,
+        user_id,
+        title,
+        description,
+        category,
+        status,
+        priority,
+        created_at,
+        updated_at
+      `)
+      .eq("status", status)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    // Fetch user details for each complaint
+    const complaintsWithUsers = await Promise.all(
+      data.map(async (complaint) => {
+        const { data: userData } = await supabase
+          .from("users")
+          .select("id, name, email")
+          .eq("id", complaint.user_id)
+          .single();
+        return {
+          ...complaint,
+          reporter: {
+            id: userData?.id,
+            displayName: userData?.name,
+            email: userData?.email,
+          },
+        };
+      })
+    );
+
+    res.json({ ok: true, complaints: complaintsWithUsers });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/* Update complaint status and award rewards */
+app.post("/api/police/complaints/:id/status", async (req, res) => {
+  try {
+    const user = getUser(req);
+    if (!user || user.role !== "police")
+      return res.status(401).json({ error: "Police access required" });
+
+    const { id } = req.params;
+    const { status } = req.body || {};
+
+    if (!status || !["verified", "rejected"].includes(status)) {
+      return res.status(400).json({ error: "Invalid status" });
+    }
+
+    // Get complaint
+    const { data: complaint, error: complaintError } = await supabase
+      .from("complaints")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (complaintError || !complaint)
+      return res.status(404).json({ error: "Complaint not found" });
+
+    // Update complaint status
+    const { data: updated, error: updateError } = await supabase
+      .from("complaints")
+      .update({ status, updated_at: new Date().toISOString() })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (updateError) throw updateError;
+
+    // Award reward if verified
+    if (status === "verified") {
+      const rewardAmount = parseInt(process.env.COMPLAINT_REWARD_AMOUNT, 10) || 500;
+      const currency = process.env.CURRENCY || "INR";
+
+      const { error: rewardError } = await supabase
+        .from("rewards")
+        .insert([
+          {
+            user_id: complaint.user_id,
+            amount: rewardAmount,
+            currency,
+            source_type: "complaint_verified",
+            status: "awarded",
+          },
+        ]);
+
+      if (rewardError) throw rewardError;
+    }
+
+    res.json({ ok: true, complaint: updated });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/* Get rewards history */
+app.get("/api/police/rewards-history", async (req, res) => {
+  try {
+    const user = getUser(req);
+    if (!user || user.role !== "police")
+      return res.status(401).json({ error: "Police access required" });
+
+    const { data, error } = await supabase
+      .from("rewards")
+      .select(`
+        id,
+        user_id,
+        amount,
+        currency,
+        source_type,
+        status,
+        created_at
+      `)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    // Fetch user data for each reward
+    const rewardsWithUsers = await Promise.all(
+      data.map(async (reward) => {
+        const { data: userData } = await supabase
+          .from("users")
+          .select("name, email")
+          .eq("id", reward.user_id)
+          .single();
+        return {
+          ...reward,
+          user_name: userData?.name,
+          user_email: userData?.email,
+        };
+      })
+    );
+
+    res.json({ ok: true, rewards: rewardsWithUsers });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default app;
