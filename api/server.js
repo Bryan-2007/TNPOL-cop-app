@@ -12,7 +12,6 @@ const app = express();
    STATIC FILES
 ========================= */
 app.use(express.static(join(__dirname, "..", "public")));
-app.use("/uploads", express.static(join(__dirname, "..", "uploads")));
 
 /* =========================
    BODY PARSERS
