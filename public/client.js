@@ -294,14 +294,14 @@
       });
     }
 
-    const user = await loadMe();
-    if (user) {
+    const currentLoggedInUser = await loadMe();
+    if (currentLoggedInUser) {
       if (meNotice) meNotice.classList.add('hidden');
       if (loginLink) loginLink.classList.add('hidden');
       if (registerLink) registerLink.classList.add('hidden');
       if (viewMyReportsBtn) viewMyReportsBtn.classList.remove('hidden');
       if (profileWrap) profileWrap.classList.remove('hidden');
-      if (profileMenuHeader) profileMenuHeader.textContent = user.displayName || 'User';
+      if (profileMenuHeader) profileMenuHeader.textContent = currentLoggedInUser.displayName || 'User';
     } else {
       if (viewMyReportsBtn) viewMyReportsBtn.classList.add('hidden');
       if (profileWrap) profileWrap.classList.add('hidden');
@@ -325,8 +325,8 @@
 
     rewardsLink && rewardsLink.addEventListener('click', async (e) => {
       e.preventDefault();
-      const user = await loadMe();
-      if (!user) {
+      const rewardsUser = await loadMe();
+      if (!rewardsUser) {
         alert('You must login for viewing rewards');
         return;
       }
