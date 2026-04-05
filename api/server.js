@@ -115,7 +115,7 @@ app.post("/api/auth/register", async (req, res) => {
 
     const { data, error } = await supabase
       .from("users")
-      .insert([{ name, email, password_hash }])
+      .insert([{ name, email, password_hash, role: 'citizen' }])
       .select()
       .single();
 
@@ -125,15 +125,17 @@ app.post("/api/auth/register", async (req, res) => {
     // Add displayName for client compatibility
     data.displayName = data.name;
 
-    const token = createSession(data);
+    console.log('[REGISTER] User created:', email, 'role:', data.role);
+    const sessionCookie = createSessionCookie(data);
 
-    res.setHeader("Set-Cookie", `session=${token}; Path=/; HttpOnly`);
+    res.setHeader("Set-Cookie", `session=${sessionCookie}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800`);
 
     res.json({
       ok: true,
       user: data,
     });
   } catch (err) {
+    console.error('[REGISTER] Error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });

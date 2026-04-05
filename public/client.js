@@ -463,9 +463,17 @@
       if (referralCode) payload.referralCode = referralCode;
 
       try {
+        console.log('[REGISTER] Submitting registration for:', payload.email);
         const data = await apiJson('/api/auth/register', { method: 'POST', body: JSON.stringify(payload) });
-        if (data?.ok) location.href = '/';
+        console.log('[REGISTER] Response:', data);
+        if (data?.ok) {
+          console.log('[REGISTER] Success, redirecting to /');
+          location.href = '/';
+        } else {
+          console.log('[REGISTER] No ok flag in response');
+        }
       } catch (err) {
+        console.error('[REGISTER] Error:', err);
         setError(errorEl, err.message || 'Registration failed');
       }
     });
