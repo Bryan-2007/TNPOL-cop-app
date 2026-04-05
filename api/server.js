@@ -1,6 +1,6 @@
 import express from "express";
 import { createClient } from "@supabase/supabase-js";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import crypto from "crypto";
 
 const app = express();
